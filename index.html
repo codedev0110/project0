@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Google Search Frontend</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 2rem;
+    }
+    nav {
+        text-align: right;
+        margin-bottom: 1rem;
+    }
+    nav a {
+        margin-left: 1rem;
+        cursor: pointer;
+        color: #1a0dab;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    nav a.active {
+        text-decoration: underline;
+    }
+    form {
+        text-align: center;
+        margin-top: 5rem;
+    }
+    input[type="text"] {
+        width: 400px;
+        height: 35px;
+        font-size: 16px;
+        border-radius: 20px;
+        border: 1px solid #dfe1e5;
+        padding: 0 15px;
+        outline: none;
+        margin-bottom: 10px;
+    }
+    input[type="submit"], button {
+        width: 130px;
+        height: 35px;
+        border-radius: 4px;
+        border: 1px solid #f8f8f8;
+        background-color: #f8f8f8;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 5px;
+    }
+    button:hover, input[type="submit"]:hover {
+        background-color: #e8e8e8;
+    }
+    /* Advanced Search spesifik */
+    #advancedForm input[type="text"] {
+        display: block;
+        width: 400px;
+        margin: 10px auto;
+        border-radius: 4px;
+        padding: 5px 10px;
+    }
+    #advancedForm label {
+        display: block;
+        max-width: 400px;
+        margin: 15px auto 5px;
+        font-weight: bold;
+        text-align: left;
+    }
+    #advancedForm input[type="submit"] {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        width: 150px;
+    }
+    #advancedForm input[type="submit"]:hover {
+        background-color: #1669c1;
+    }
+    /* Gizli bölmələr */
+    section {
+        display: none;
+    }
+    section.active {
+        display: block;
+    }
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="#" id="navSearch" class="active">Search</a> |
+    <a href="#" id="navImages">Images</a> |
+    <a href="#" id="navAdvanced">Advanced Search</a>
+</nav>
+
+<!-- Search Bölməsi -->
+<section id="searchSection" class="active">
+    <form id="searchForm" method="GET" action="https://www.google.com/search" target="_blank">
+        <input type="text" name="q" placeholder="Search Google..." required />
+        <br />
+        <input type="submit" value="Google Search" />
+        <button type="button" onclick="feelingLucky()">I'm Feeling Lucky</button>
+    </form>
+</section>
+
+<!-- Images Bölməsi -->
+<section id="imagesSection">
+    <form id="imagesForm" method="GET" action="https://www.google.com/search" target="_blank">
+        <input type="text" name="q" placeholder="Search Images..." required />
+        <input type="hidden" name="tbm" value="isch" />
+        <br />
+        <input type="submit" value="Google Image Search" />
+    </form>
+</section>
+
+<!-- Advanced Bölməsi -->
+<section id="advancedSection">
+    <form id="advancedForm" method="GET" action="https://www.google.com/search" target="_blank">
+        <label for="allWords">Find pages with all these words:</label>
+        <input type="text" name="as_q" id="allWords" />
+
+        <label for="exactPhrase">Find pages with this exact word or phrase:</label>
+        <input type="text" name="as_epq" id="exactPhrase" />
+
+        <label for="anyWords">Find pages with any of these words:</label>
+        <input type="text" name="as_oq" id="anyWords" />
+
+        <label for="noneWords">Find pages with none of these words:</label>
+        <input type="text" name="as_eq" id="noneWords" />
+
+        <input type="submit" value="Advanced Search" />
+    </form>
+</section>
+
+<script>
+    // Naviqasiya linkləri və bölmələrin idarəsi
+    const navSearch = document.getElementById('navSearch');
+    const navImages = document.getElementById('navImages');
+    const navAdvanced = document.getElementById('navAdvanced');
+
+    const searchSection = document.getElementById('searchSection');
+    const imagesSection = document.getElementById('imagesSection');
+    const advancedSection = document.getElementById('advancedSection');
+
+    function showSection(sectionToShow) {
+        // hamısını gizlət
+        searchSection.classList.remove('active');
+        imagesSection.classList.remove('active');
+        advancedSection.classList.remove('active');
+
+        navSearch.classList.remove('active');
+        navImages.classList.remove('active');
+        navAdvanced.classList.remove('active');
+
+        // seçiləni göstər
+        sectionToShow.classList.add('active');
+
+        // aktiv linki işarələ
+        if (sectionToShow === searchSection) navSearch.classList.add('active');
+        if (sectionToShow === imagesSection) navImages.classList.add('active');
+        if (sectionToShow === advancedSection) navAdvanced.classList.add('active');
+    }
+
+    navSearch.addEventListener('click', e => {
+        e.preventDefault();
+        showSection(searchSection);
+    });
+    navImages.addEventListener('click', e => {
+        e.preventDefault();
+        showSection(imagesSection);
+    });
+    navAdvanced.addEventListener('click', e => {
+        e.preventDefault();
+        showSection(advancedSection);
+    });
+
+    // I'm Feeling Lucky funksiyası
+    function feelingLucky() {
+        const input = document.querySelector('#searchForm input[name="q"]');
+        const query = input.value.trim();
+        if (!query) return;
+        const url = `https://www.google.com/search?q=${encodeURIComponent(query)}&btnI=1`;
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
