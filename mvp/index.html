@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>CodeLearn MVP</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+	<style>
+		body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; }
+		.code-block { position: relative; }
+		.explain-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 9999px; padding: 6px 8px; font-size: 12px; cursor: pointer; }
+		.popover { position: absolute; top: 40px; right: 8px; z-index: 50; background: #0f172a; color: #e2e8f0; border: 1px solid #334155; border-radius: 8px; padding: 12px; width: min(520px, 90vw); box-shadow: 0 10px 20px rgba(0,0,0,0.25); }
+		.popover h4 { font-weight: 600; margin-bottom: 8px; }
+		.popover .close { position: absolute; top: 8px; right: 8px; cursor: pointer; }
+	</style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+	<header class="border-b bg-white/80 backdrop-blur sticky top-0 z-40">
+		<div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+			<div class="flex items-center gap-2">
+				<div class="w-8 h-8 rounded bg-indigo-600"></div>
+				<a href="#/dashboard" class="font-semibold">CodeLearn</a>
+			</div>
+			<nav class="flex items-center gap-3">
+				<button id="dashboardLink" class="px-3 py-1.5 rounded hover:bg-slate-100">Panel</button>
+				<button id="settingsLink" class="px-3 py-1.5 rounded hover:bg-slate-100">Ayarlar</button>
+				<div id="authArea" class="ml-2"></div>
+			</nav>
+		</div>
+	</header>
+
+	<main class="max-w-6xl mx-auto px-4 py-6">
+		<!-- Dashboard -->
+		<section id="dashboardView" class="hidden">
+			<div class="mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+				<select id="languageFilter" class="border rounded px-3 py-2">
+					<option value="">Dil (hamısı)</option>
+					<option value="PYTHON">Python</option>
+					<option value="JAVASCRIPT">JavaScript</option>
+					<option value="TYPESCRIPT">TypeScript</option>
+				</select>
+				<select id="levelFilter" class="border rounded px-3 py-2">
+					<option value="">Səviyyə (hamısı)</option>
+					<option value="BEGINNER">Beginner</option>
+					<option value="INTERMEDIATE">Intermediate</option>
+					<option value="ADVANCED">Advanced</option>
+				</select>
+				<select id="sortFilter" class="border rounded px-3 py-2">
+					<option value="recommended">Tövsiyə olunan</option>
+					<option value="popular">Populyar</option>
+					<option value="new">Yenilər</option>
+				</select>
+				<input id="searchInput" class="border rounded px-3 py-2" placeholder="Axtarış..." />
+			</div>
+			<div id="projectList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+		</section>
+
+		<!-- Project -->
+		<section id="projectView" class="hidden">
+			<button id="backToDashboard" class="mb-4 px-3 py-1.5 rounded border hover:bg-slate-100">← Panela qayıt</button>
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<!-- Sidebar -->
+				<aside class="lg:col-span-1 bg-white border rounded p-4 h-fit">
+					<h2 id="projectTitle" class="text-xl font-semibold mb-1"></h2>
+					<p id="projectDescription" class="text-slate-600 mb-3"></p>
+					<div class="text-sm text-slate-600 space-y-1 mb-4">
+						<div>Dil: <span id="projectLanguage" class="font-medium"></span></div>
+						<div>Səviyyə: <span id="projectLevel" class="font-medium"></span></div>
+						<div>Texnologiyalar: <span id="projectTech" class="font-medium"></span></div>
+						<div>Versiya: <span id="projectVersion" class="font-medium"></span></div>
+						<div>Orta reytinq: <span id="projectAvgRating" class="font-medium"></span></div>
+					</div>
+					<div class="mb-4">
+						<label class="block text-sm mb-1">Qiymətləndirmə (1-5)</label>
+						<div class="flex items-center gap-2">
+							<input id="ratingInput" type="number" min="1" max="5" class="border rounded px-2 py-1 w-20" />
+							<button id="rateBtn" class="px-3 py-1.5 rounded bg-indigo-600 text-white">Təsdiqlə</button>
+						</div>
+					</div>
+					<div>
+						<h3 class="font-semibold mb-2">Rəylər</h3>
+						<div id="commentsList" class="space-y-3"></div>
+						<div id="commentFormArea" class="mt-3"></div>
+					</div>
+				</aside>
+
+				<!-- Code viewer -->
+				<section class="lg:col-span-2 bg-white border rounded p-4">
+					<div id="codeContainer" class="prose max-w-none"></div>
+				</section>
+			</div>
+		</section>
+
+		<!-- Settings -->
+		<section id="settingsView" class="hidden">
+			<h2 class="text-xl font-semibold mb-3">Ayarlar</h2>
+			<p class="text-slate-600 mb-3">İstəsəniz, OpenAI API açarınızı daxil edin ki, kod izahları real LLM ilə verilsin. Əks halda, sadə lokal izah istifadə olunacaq.</p>
+			<div class="flex items-center gap-3">
+				<input id="openaiKeyInput" type="password" class="border rounded px-3 py-2 w-full max-w-lg" placeholder="sk-..." />
+				<button id="saveKeyBtn" class="px-3 py-2 rounded bg-indigo-600 text-white">Yadda saxla</button>
+				<button id="clearKeyBtn" class="px-3 py-2 rounded border">Sil</button>
+			</div>
+		</section>
+	</main>
+
+	<!-- Auth Modals -->
+	<div id="authModals"></div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<script src="./app.js"></script>
+</body>
+</html>
