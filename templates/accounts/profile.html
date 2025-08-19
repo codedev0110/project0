@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - CodeLearnAI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Profile Info -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="text-center mb-6">
+                    {% if user.avatar_url %}
+                        <img src="{{ user.avatar_url }}" alt="{{ user.username }}" class="w-24 h-24 rounded-full mx-auto mb-4">
+                    {% else %}
+                        <div class="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-2xl text-gray-600">{{ user.username.0|upper }}</span>
+                        </div>
+                    {% endif %}
+                    <h1 class="text-2xl font-bold text-gray-900">{{ user.get_full_name|default:user.username }}</h1>
+                    <p class="text-gray-600">@{{ user.username }}</p>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Skill Level:</span>
+                        <span class="font-medium">{{ user.skill_level|capfirst }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Reputation:</span>
+                        <span class="font-medium">{{ user.reputation_score }}</span>
+                    </div>
+                    {% if user.github_username %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">GitHub:</span>
+                            <a href="https://github.com/{{ user.github_username }}" target="_blank" 
+                               class="text-indigo-600 hover:text-indigo-700">{{ user.github_username }}</a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if user.bio %}
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <h3 class="font-medium text-gray-900 mb-2">Bio</h3>
+                        <p class="text-gray-600 text-sm">{{ user.bio }}</p>
+                    </div>
+                {% endif %}
+                
+                {% if user.preferred_languages %}
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <h3 class="font-medium text-gray-900 mb-2">Preferred Languages</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for language in user.preferred_languages %}
+                                <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">{{ language }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Profile Form -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Edit Profile</h2>
+                
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div>
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        {{ form.email }}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.skill_level.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Skill Level</label>
+                        {{ form.skill_level }}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.preferred_languages.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Preferred Languages</label>
+                        {{ form.preferred_languages }}
+                        <p class="text-sm text-gray-500 mt-1">{{ form.preferred_languages.help_text }}</p>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                        {{ form.bio }}
+                    </div>
+                    
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+            
+            <!-- User's Projects -->
+            <div class="bg-white rounded-xl shadow-md p-6 mt-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Your Projects</h2>
+                
+                {% if user.owned_projects.all %}
+                    <div class="space-y-4">
+                        {% for project in user.owned_projects.all %}
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">
+                                            <a href="{% url 'projects:detail' project.id %}" class="hover:text-indigo-600">
+                                                {{ project.name }}
+                                            </a>
+                                        </h3>
+                                        <p class="text-gray-600 text-sm">{{ project.description|truncatewords:15 }}</p>
+                                    </div>
+                                    <div class="text-right text-sm text-gray-500">
+                                        <div>{{ project.primary_language }}</div>
+                                        <div>{{ project.views_count }} views</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <div class="text-4xl mb-4">📂</div>
+                        <p class="text-gray-600 mb-4">You haven't imported any projects yet.</p>
+                        <a href="{% url 'projects:import' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                            Import Your First Project
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style form fields */
+    input[type="text"], input[type="email"], select, textarea {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+    
+    input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus {
+        outline: none;
+        ring: 2px;
+        ring-color: #6366f1;
+        border-color: transparent;
+    }
+</style>
+{% endblock %}

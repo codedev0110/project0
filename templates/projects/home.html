@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeLearnAI - Learn Programming Through Real Projects{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center py-12 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl mb-12">
+    <h1 class="text-4xl md:text-6xl font-bold mb-4">
+        Learn Programming with AI
+    </h1>
+    <p class="text-xl md:text-2xl mb-8 opacity-90">
+        Explore real GitHub projects with AI-powered explanations
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{% url 'projects:learning_mode' %}" class="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+            Start Learning
+        </a>
+        <a href="{% url 'projects:list' %}" class="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
+            Browse Projects
+        </a>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="grid md:grid-cols-3 gap-8 mb-12">
+    <div class="bg-white p-6 rounded-xl shadow-md text-center">
+        <div class="text-4xl mb-4">🤖</div>
+        <h3 class="text-xl font-semibold mb-2">AI-Powered Explanations</h3>
+        <p class="text-gray-600">Get instant, clear explanations of any code block with our AI assistant.</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-md text-center">
+        <div class="text-4xl mb-4">📚</div>
+        <h3 class="text-xl font-semibold mb-2">Real Projects</h3>
+        <p class="text-gray-600">Learn from actual GitHub repositories used in production.</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-md text-center">
+        <div class="text-4xl mb-4">👥</div>
+        <h3 class="text-xl font-semibold mb-2">Community Learning</h3>
+        <p class="text-gray-600">Ask questions, share insights, and learn together with other developers.</p>
+    </div>
+</div>
+
+<!-- Recent Projects -->
+{% if recent_projects %}
+<section class="mb-12">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-900">Recent Projects</h2>
+        <a href="{% url 'projects:list' %}" class="text-indigo-600 hover:text-indigo-700 font-medium">View All →</a>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in recent_projects %}
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-semibold text-gray-900">
+                            <a href="{% url 'projects:detail' project.id %}" class="hover:text-indigo-600">
+                                {{ project.name }}
+                            </a>
+                        </h3>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                            {{ project.difficulty_level|capfirst }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 mb-4 line-clamp-3">{{ project.description|truncatewords:20 }}</p>
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span class="bg-gray-100 px-2 py-1 rounded">{{ project.primary_language }}</span>
+                        <div class="flex space-x-4">
+                            <span>⭐ {{ project.stars_count }}</span>
+                            <span>👁️ {{ project.views_count }}</span>
+                            <span>❤️ {{ project.likes_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Popular Projects -->
+{% if popular_projects %}
+<section>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-900">Popular Projects</h2>
+        <a href="{% url 'projects:list' %}?sort=popular" class="text-indigo-600 hover:text-indigo-700 font-medium">View All →</a>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in popular_projects %}
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-semibold text-gray-900">
+                            <a href="{% url 'projects:detail' project.id %}" class="hover:text-indigo-600">
+                                {{ project.name }}
+                            </a>
+                        </h3>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                            {{ project.difficulty_level|capfirst }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 mb-4 line-clamp-3">{{ project.description|truncatewords:20 }}</p>
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span class="bg-gray-100 px-2 py-1 rounded">{{ project.primary_language }}</span>
+                        <div class="flex space-x-4">
+                            <span>⭐ {{ project.stars_count }}</span>
+                            <span>👁️ {{ project.views_count }}</span>
+                            <span>❤️ {{ project.likes_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Empty State -->
+{% if not recent_projects and not popular_projects %}
+<div class="text-center py-12">
+    <div class="text-6xl mb-4">📚</div>
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">No Projects Yet</h2>
+    <p class="text-gray-600 mb-8">Be the first to import a project and start learning!</p>
+    {% if user.is_authenticated %}
+        <a href="{% url 'projects:import' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold">
+            Import Your First Project
+        </a>
+    {% else %}
+        <a href="{% url 'accounts:signup' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold">
+            Sign Up to Get Started
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

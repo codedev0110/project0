@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Projects - CodeLearnAI{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 class="text-3xl font-bold text-gray-900">All Projects</h1>
+        {% if user.is_authenticated %}
+            <a href="{% url 'projects:import' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                Import Project
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="bg-white rounded-xl shadow-md p-6 mb-8">
+    <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Search -->
+        <div class="md:col-span-2">
+            <input type="text" name="search" value="{{ search_query }}" 
+                   placeholder="Search projects..."
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        
+        <!-- Language Filter -->
+        <div>
+            <select name="language" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">All Languages</option>
+                {% for language in languages %}
+                    <option value="{{ language }}" {% if language == language_filter %}selected{% endif %}>
+                        {{ language }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Difficulty Filter -->
+        <div>
+            <select name="difficulty" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">All Levels</option>
+                <option value="beginner" {% if difficulty_filter == 'beginner' %}selected{% endif %}>Beginner</option>
+                <option value="intermediate" {% if difficulty_filter == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                <option value="advanced" {% if difficulty_filter == 'advanced' %}selected{% endif %}>Advanced</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="md:col-span-4 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition">
+            Apply Filters
+        </button>
+    </form>
+    
+    <!-- Sort Options -->
+    <div class="flex space-x-4 mt-4 pt-4 border-t border-gray-200">
+        <span class="text-sm font-medium text-gray-700">Sort by:</span>
+        <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if language_filter %}language={{ language_filter }}&{% endif %}{% if difficulty_filter %}difficulty={{ difficulty_filter }}&{% endif %}sort=recent" 
+           class="text-sm {% if sort_by == 'recent' %}text-indigo-600 font-semibold{% else %}text-gray-600 hover:text-indigo-600{% endif %}">
+            Recent
+        </a>
+        <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if language_filter %}language={{ language_filter }}&{% endif %}{% if difficulty_filter %}difficulty={{ difficulty_filter }}&{% endif %}sort=popular" 
+           class="text-sm {% if sort_by == 'popular' %}text-indigo-600 font-semibold{% else %}text-gray-600 hover:text-indigo-600{% endif %}">
+            Popular
+        </a>
+        <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if language_filter %}language={{ language_filter }}&{% endif %}{% if difficulty_filter %}difficulty={{ difficulty_filter }}&{% endif %}sort=stars" 
+           class="text-sm {% if sort_by == 'stars' %}text-indigo-600 font-semibold{% else %}text-gray-600 hover:text-indigo-600{% endif %}">
+            Most Stars
+        </a>
+    </div>
+</div>
+
+<!-- Projects Grid -->
+{% if projects %}
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in projects %}
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-semibold text-gray-900">
+                            <a href="{% url 'projects:detail' project.id %}" class="hover:text-indigo-600">
+                                {{ project.name }}
+                            </a>
+                        </h3>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                            {{ project.difficulty_level|capfirst }}
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4 line-clamp-3">
+                        {{ project.description|truncatewords:25|default:"No description available" }}
+                    </p>
+                    
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="bg-gray-100 px-2 py-1 rounded">{{ project.primary_language }}</span>
+                        <span class="text-xs">by {{ project.owner.username }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <div class="flex space-x-4">
+                            <span>⭐ {{ project.stars_count }}</span>
+                            <span>👁️ {{ project.views_count }}</span>
+                            <span>❤️ {{ project.likes_count }}</span>
+                        </div>
+                        <span>{{ project.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <!-- Empty State -->
+    <div class="text-center py-12">
+        <div class="text-6xl mb-4">🔍</div>
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">No Projects Found</h2>
+        <p class="text-gray-600 mb-8">
+            {% if search_query or language_filter or difficulty_filter %}
+                Try adjusting your filters or search terms.
+            {% else %}
+                No projects have been imported yet.
+            {% endif %}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if search_query or language_filter or difficulty_filter %}
+                <a href="{% url 'projects:list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium transition">
+                    Clear Filters
+                </a>
+            {% endif %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'projects:import' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                    Import a Project
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:signup' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                    Sign Up to Import
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

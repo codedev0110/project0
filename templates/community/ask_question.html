@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Ask Question - {{ project.name }} - CodeLearnAI{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-md p-8">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Ask a Question</h1>
+            <p class="text-gray-600 mt-2">About: <span class="font-semibold">{{ project.name }}</span></p>
+        </div>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Question Title</label>
+                <input type="text" name="title" id="title" required 
+                       placeholder="What would you like to know about this project?"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            </div>
+            
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">Question Details</label>
+                <textarea name="content" id="content" rows="6" required 
+                          placeholder="Provide more details about your question..."
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"></textarea>
+            </div>
+            
+            <!-- Optional: Specific File Reference -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <h3 class="font-medium text-gray-900 mb-3">Optional: Reference Specific Code</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="file_path" class="block text-sm font-medium text-gray-700 mb-2">File Path</label>
+                        <input type="text" name="file_path" id="file_path" 
+                               placeholder="e.g., src/main.py"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="line_number" class="block text-sm font-medium text-gray-700 mb-2">Line Number</label>
+                        <input type="number" name="line_number" id="line_number" 
+                               placeholder="e.g., 42"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">
+                    Help others understand your question by referencing specific files or lines
+                </p>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium transition">
+                    Post Question
+                </button>
+                <a href="{% url 'projects:detail' project.id %}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-center py-2 px-4 rounded-lg font-medium transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Question Guidelines -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="font-semibold text-blue-900 mb-3">Tips for Great Questions</h3>
+        <ul class="text-sm text-blue-800 space-y-1">
+            <li>• Be specific about what you don't understand</li>
+            <li>• Include relevant code snippets or file references</li>
+            <li>• Explain what you've already tried</li>
+            <li>• Use clear, descriptive titles</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
