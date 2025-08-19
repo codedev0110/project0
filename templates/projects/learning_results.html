@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Recommended Projects - CodeLearnAI{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Recommended for You</h1>
+            <p class="text-gray-600 mt-2">
+                {{ selected_skill_level|capfirst }} level projects
+                {% if selected_languages %}
+                    in {{ selected_languages|join:", " }}
+                {% endif %}
+            </p>
+        </div>
+        <a href="{% url 'projects:learning_mode' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition">
+            Change Preferences
+        </a>
+    </div>
+</div>
+
+{% if projects %}
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in projects %}
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-semibold text-gray-900">
+                            <a href="{% url 'projects:detail' project.id %}" class="hover:text-indigo-600">
+                                {{ project.name }}
+                            </a>
+                        </h3>
+                        <div class="flex flex-col items-end space-y-1">
+                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                                {{ project.difficulty_level|capfirst }}
+                            </span>
+                            {% if project.primary_language in selected_languages %}
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                    Match
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4 line-clamp-3">
+                        {{ project.description|truncatewords:20|default:"No description available" }}
+                    </p>
+                    
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span class="bg-gray-100 px-2 py-1 rounded">{{ project.primary_language }}</span>
+                        <span class="text-xs">by {{ project.owner.username }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                        <div class="flex space-x-4">
+                            <span>⭐ {{ project.stars_count }}</span>
+                            <span>👁️ {{ project.views_count }}</span>
+                            <span>❤️ {{ project.likes_count }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Learning Indicators -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>{{ project.questions.count }} question{{ project.questions.count|pluralize }}</span>
+                            <span>{{ project.files.count }} file{{ project.files.count|pluralize }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Learning Tips for Selected Level -->
+    <div class="mt-12 bg-indigo-50 border border-indigo-200 rounded-xl p-6">
+        <h2 class="text-xl font-semibold text-indigo-900 mb-4">
+            Tips for {{ selected_skill_level|capfirst }} Level Learning
+        </h2>
+        
+        {% if selected_skill_level == 'beginner' %}
+            <div class="text-indigo-800 space-y-2">
+                <p>• Start by understanding the overall project structure and main files</p>
+                <p>• Use the AI explanation feature liberally - don't hesitate to ask about any code you don't understand</p>
+                <p>• Look for comments in the code that explain what's happening</p>
+                <p>• Try to identify common patterns like functions, classes, and imports</p>
+            </div>
+        {% elif selected_skill_level == 'intermediate' %}
+            <div class="text-indigo-800 space-y-2">
+                <p>• Focus on understanding design patterns and architectural decisions</p>
+                <p>• Compare different approaches used across similar projects</p>
+                <p>• Pay attention to error handling and edge cases</p>
+                <p>• Try to understand the project's dependencies and how they're used</p>
+            </div>
+        {% else %}
+            <div class="text-indigo-800 space-y-2">
+                <p>• Analyze the scalability and performance considerations</p>
+                <p>• Look for advanced patterns like dependency injection, design patterns</p>
+                <p>• Consider how you might improve or extend the codebase</p>
+                <p>• Share your insights with the community to help others learn</p>
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <!-- No Results -->
+    <div class="text-center py-12">
+        <div class="text-6xl mb-4">🎯</div>
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">No Projects Found</h2>
+        <p class="text-gray-600 mb-8">
+            We couldn't find any {{ selected_skill_level }} level projects
+            {% if selected_languages %}in {{ selected_languages|join:", " }}{% endif %}.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'projects:learning_mode' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                Try Different Preferences
+            </a>
+            <a href="{% url 'projects:list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium transition">
+                Browse All Projects
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

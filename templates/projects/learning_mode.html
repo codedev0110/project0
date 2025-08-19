@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Learning Mode - CodeLearnAI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Learning Mode</h1>
+        <p class="text-xl text-gray-600">Find projects tailored to your skill level and interests</p>
+    </div>
+    
+    <!-- Recommendation Form -->
+    <div class="bg-white rounded-xl shadow-md p-8 mb-12">
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Skill Level Selection -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">What's your skill level?</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="skill_level" value="beginner" class="sr-only peer" checked>
+                        <div class="border-2 border-gray-200 rounded-lg p-6 text-center hover:border-indigo-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition">
+                            <div class="text-3xl mb-2">🌱</div>
+                            <h4 class="font-semibold text-gray-900">Beginner</h4>
+                            <p class="text-sm text-gray-600 mt-1">Just starting out or learning basics</p>
+                        </div>
+                    </label>
+                    
+                    <label class="cursor-pointer">
+                        <input type="radio" name="skill_level" value="intermediate" class="sr-only peer">
+                        <div class="border-2 border-gray-200 rounded-lg p-6 text-center hover:border-indigo-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition">
+                            <div class="text-3xl mb-2">🚀</div>
+                            <h4 class="font-semibold text-gray-900">Intermediate</h4>
+                            <p class="text-sm text-gray-600 mt-1">Have some experience, ready for challenges</p>
+                        </div>
+                    </label>
+                    
+                    <label class="cursor-pointer">
+                        <input type="radio" name="skill_level" value="advanced" class="sr-only peer">
+                        <div class="border-2 border-gray-200 rounded-lg p-6 text-center hover:border-indigo-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition">
+                            <div class="text-3xl mb-2">🎯</div>
+                            <h4 class="font-semibold text-gray-900">Advanced</h4>
+                            <p class="text-sm text-gray-600 mt-1">Experienced developer looking for complex projects</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Language Selection -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Which programming languages interest you?</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {% for language in languages %}
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="languages" value="{{ language }}" class="sr-only peer">
+                            <div class="border border-gray-200 rounded-lg p-3 text-center hover:border-indigo-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition">
+                                <span class="text-sm font-medium text-gray-700 peer-checked:text-indigo-700">{{ language }}</span>
+                            </div>
+                        </label>
+                    {% endfor %}
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Select all languages you'd like to learn or improve</p>
+            </div>
+            
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-semibold text-lg transition">
+                Find Recommended Projects
+            </button>
+        </form>
+    </div>
+    
+    <!-- Learning Tips -->
+    <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl p-8">
+        <h2 class="text-2xl font-bold mb-6">Learning Tips</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="font-semibold mb-2">📖 How to Use This Platform</h3>
+                <ul class="text-sm space-y-1 opacity-90">
+                    <li>• Start with projects matching your skill level</li>
+                    <li>• Use the AI explanation feature (?) for unclear code</li>
+                    <li>• Ask questions in the community section</li>
+                    <li>• Try to understand the overall project structure first</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-2">🎯 Maximize Your Learning</h3>
+                <ul class="text-sm space-y-1 opacity-90">
+                    <li>• Don't just read - try to modify and experiment</li>
+                    <li>• Look for patterns and best practices</li>
+                    <li>• Connect concepts across different projects</li>
+                    <li>• Share your insights with the community</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
